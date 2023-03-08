@@ -61,6 +61,7 @@ out vec2 base_color_texcoord;
 out vec2 normal_texcoord;
 out vec2 metallic_roughness_texcoord;
 out vec2 emissive_texcoord;
+out vec2 original_texcoord; // TODO: Remove
  
 out vec4 vertex_color;
 
@@ -90,6 +91,7 @@ void main()
     normal_texcoord = texture_transform(texcoord0, texture_normal_scale, texture_normal_rotation, texture_normal_offset, texture_matrix0);
     metallic_roughness_texcoord = texture_transform(texcoord0, texture_metallic_roughness_scale, texture_metallic_roughness_rotation, texture_metallic_roughness_offset, texture_matrix0);
     emissive_texcoord = texture_transform(texcoord0, texture_emissive_scale, texture_emissive_rotation, texture_emissive_offset, texture_matrix0);
+    original_texcoord = texcoord0; // TODO: Remove
 
 #ifdef HAS_SKIN
 	vec3 n = (mat*vec4(normal.xyz+position.xyz,1.0)).xyz-pos.xyz;

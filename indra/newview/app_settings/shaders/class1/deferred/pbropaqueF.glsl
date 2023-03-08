@@ -51,6 +51,7 @@ in vec2 base_color_texcoord;
 in vec2 normal_texcoord;
 in vec2 metallic_roughness_texcoord;
 in vec2 emissive_texcoord;
+in vec2 original_texcoord; // TODO: Remove
 
 uniform float minimum_alpha; // PBR alphaMode: MASK, See: mAlphaCutoff, setAlphaCutoff()
 
@@ -69,6 +70,7 @@ void main()
     }
 
     vec3 col = vertex_color.rgb * srgb_to_linear(basecolor.rgb);
+    col = vec3(original_texcoord * (vec2(0.9) + 0.1*col.xx), 0); // TODO: Remove
 
     // from mikktspace.com
     vec3 vNt = texture2D(bumpMap, normal_texcoord.xy).xyz*2.0-1.0;

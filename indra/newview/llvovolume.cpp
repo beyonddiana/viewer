@@ -591,6 +591,7 @@ void LLVOVolume::onDrawableUpdateFromServer()
 
 void LLVOVolume::animateTextures()
 {
+#if 1 // TODO: Restore
 	if (!mDead)
 	{
         shrinkWrap();
@@ -616,7 +617,7 @@ void LLVOVolume::animateTextures()
 			{
 				LLFace* facep = mDrawable->getFace(i);
 				if (!facep) continue;
-				if(facep->getVirtualSize() <= MIN_TEX_ANIM_SIZE && facep->mTextureMatrix) continue;
+				//if(facep->getVirtualSize() <= MIN_TEX_ANIM_SIZE && facep->mTextureMatrix) continue; // TODO: Restore
 
 				const LLTextureEntry* te = facep->getTextureEntry();
 			
@@ -670,6 +671,24 @@ void LLVOVolume::animateTextures()
                 }
                 else
                 {
+#if 0 // TODO: Restore
+                    // TODO: These solve our animation woes, but why? (not just n+1 affected, and the effect is semi-random)
+                    if (!(result & LLViewerTextureAnim::ROTATE))
+                    {
+                        rot = 0.0f;
+                    }
+                    if (!(result & LLViewerTextureAnim::TRANSLATE))
+                    {
+                        off_s = 0.0f;
+                        off_t = 0.0f;
+                    }
+                    if (!(result & LLViewerTextureAnim::SCALE))
+                    {
+                        scale_s = 1.0f;
+                        scale_t = 1.0f;
+                    }
+#endif
+
                     // For PBR materials, use Blinn-Phong rotation as hint for
                     // translation direction. In a Blinn-Phong material, the
                     // translation direction would be a byproduct the texture
@@ -696,45 +715,67 @@ void LLVOVolume::animateTextures()
                 }
 			}
 		}
+#if 0 // TODO: Decide if we want to keep this
 		else
 		{
 			if (mTexAnimMode && mTextureAnimp->mRate == 0)
 			{
-				U8 start, count;
+                bool has_pbr = false;
+                {
+                    S32 start=0, end=mDrawable->getNumFaces()-1;
+                    if (mTextureAnimp->mFace >= 0 && mTextureAnimp->mFace <= end)
+                    {
+                        start = end = mTextureAnimp->mFace;
+                    }
+                    for (S32 i = start; i <= end; i++)
+                    {
+                        LLFace* facep = mDrawable->getFace(i);
+                        const LLTextureEntry* te = facep ? facep->getTextureEntry() : nullptr;
+                        LLGLTFMaterial *gltf_mat = te ? te->getGLTFRenderMaterial() : nullptr;
+                        has_pbr |= gltf_mat != nullptr;
+                    }
+                }
+                // TODO: This is an optimization for the case where the texture animation is frozen. Should probably just be removed.
+                if (!has_pbr)
+                {
+                    U8 start, count;
 
-				if (mTextureAnimp->mFace == -1)
-				{
-					start = 0;
-					count = getNumTEs();
-				}
-				else
-				{
-					start = (U8) mTextureAnimp->mFace;
-					count = 1;
-				}
+                    if (mTextureAnimp->mFace == -1)
+                    {
+                        start = 0;
+                        count = getNumTEs();
+                    }
+                    else
+                    {
+                        start = (U8) mTextureAnimp->mFace;
+                        count = 1;
+                    }
 
-				for (S32 i = start; i < start + count; i++)
-				{
-					if (mTexAnimMode & LLViewerTextureAnim::TRANSLATE)
-					{
-						setTEOffset(i, mTextureAnimp->mOffS, mTextureAnimp->mOffT);				
-					}
-					if (mTexAnimMode & LLViewerTextureAnim::SCALE)
-					{
-						setTEScale(i, mTextureAnimp->mScaleS, mTextureAnimp->mScaleT);	
-					}
-					if (mTexAnimMode & LLViewerTextureAnim::ROTATE)
-					{
-						setTERotation(i, mTextureAnimp->mRot);
-					}
-				}
+                    for (S32 i = start; i < start + count; i++)
+                    {
+                        if (mTexAnimMode & LLViewerTextureAnim::TRANSLATE)
+                        {
+                            setTEOffset(i, mTextureAnimp->mOffS, mTextureAnimp->mOffT);				
+                        }
+                        if (mTexAnimMode & LLViewerTextureAnim::SCALE)
+                        {
+                            setTEScale(i, mTextureAnimp->mScaleS, mTextureAnimp->mScaleT);	
+                        }
+                        if (mTexAnimMode & LLViewerTextureAnim::ROTATE)
+                        {
+                            setTERotation(i, mTextureAnimp->mRot);
+                        }
+                    }
 
-				gPipeline.markTextured(mDrawable);
-				mFaceMappingChanged = TRUE;
-				mTexAnimMode = 0;
+                    gPipeline.markTextured(mDrawable);
+                    mFaceMappingChanged = TRUE;
+                    mTexAnimMode = 0;
+                }
 			}
 		}
+#endif
 	}
+#endif
 }
 
 void LLVOVolume::updateTextures()
