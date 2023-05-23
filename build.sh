@@ -168,6 +168,7 @@ pre_build()
      -DVIEWER_CHANNEL:STRING="${viewer_channel}" \
      -DGRID:STRING="\"$viewer_grid\"" \
      -DTEMPLATE_VERIFIER_OPTIONS:STRING="$template_verifier_options" $template_verifier_master_url \
+     -DLL_RELEASE_FOR_DOWNLOAD:BOOL=ON \
      "${SIGNING[@]}" \
     || fatal "$variant configuration failed"
 

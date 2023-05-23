@@ -16,8 +16,29 @@ include_guard()
 
 include(Variables)
 
+
+# Don't bother with a MinSizeRel or Debug builds.
+set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release" CACHE STRING "Supported build types." FORCE)
+
 # We go to some trouble to set LL_BUILD to the set of relevant compiler flags.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{LL_BUILD}")
+if(LL_GENERATOR_IS_MULTI_CONFIG)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{LL_BUILD_BASE}")
+  message(DEBUG "CMAKE_CXX_FLAGS BASE: ${CMAKE_CXX_FLAGS}")
+  foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
+    string(TOUPPER ${CONFIG} CONFIG)
+    set(CMAKE_CXX_FLAGS_${CONFIG} $ENV{LL_BUILD_${CONFIG}})
+    message(DEBUG "CMAKE_CXX_FLAGS_${CONFIG} INIT: ${CMAKE_CXX_FLAGS_${CONFIG}}")
+  endforeach()
+else()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{LL_BUILD}")
+endif()
+
+if(LL_RELEASE_FOR_DOWNLOAD)
+  set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELASE} -DLL_RELEASE_FOR_DOWNLOAD=1)
+else()
+  set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_RELASE} -DRELEASE_SHOW_ASSERT=1)
+endif()
+
 # Given that, all the flags you see added below are flags NOT present in
 # https://bitbucket.org/lindenlab/viewer-build-variables/src/tip/variables.
 # Before adding new ones here, it's important to ask: can this flag really be
@@ -38,9 +59,6 @@ endif()
 if(NON_RELEASE_CRASH_REPORTING)
   add_compile_definitions( LL_SEND_CRASH_REPORTS=1)
 endif()
-
-# Don't bother with a MinSizeRel or Debug builds.
-set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release" CACHE STRING "Supported build types." FORCE)
 
 # Platform-specific compilation flags.
 
