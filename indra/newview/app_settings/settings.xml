@@ -10681,7 +10681,7 @@
     <key>RenderTerrainScale</key>
     <map>
       <key>Comment</key>
-      <string>Terrain detail texture scale</string>
+      <string>Terrain detail texture scale (meters)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -10699,6 +10699,17 @@
       <string>S32</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>
+    <key>RenderTerrainPBRScale</key>
+    <map>
+      <key>Comment</key>
+      <string>PBR terrain detail texture scale (meters)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>4.0</real>
     </map>
     <key>RenderTrackerBeacon</key>
     <map>
