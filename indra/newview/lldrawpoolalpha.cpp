@@ -347,7 +347,7 @@ void LLDrawPoolAlpha::renderAlphaHighlight(U32 mask)
                     if(params.mFace)
                     {
                         LLViewerObject* vobj = (LLViewerObject *)params.mFace->getViewerObject();
-                        if(vobj->isAttachment())
+                        if(vobj && vobj->isAttachment())
                         {
                             trackAttachments( vobj, params.mFace->isState(LLFace::RIGGED), &ratPtr );
                         }
@@ -620,7 +620,7 @@ void LLDrawPoolAlpha::renderAlpha(U32 mask, bool depth_only, bool rigged)
                 {
                     LLViewerObject* vobj = (LLViewerObject *)params.mFace->getViewerObject();
 
-                    if(vobj->isAttachment())
+                    if(vobj && vobj->isAttachment())
                     {
                         trackAttachments( vobj, params.mFace->isState(LLFace::RIGGED), &ratPtr );
                     }
